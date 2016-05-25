@@ -8,6 +8,7 @@ package br.metodista.ads.modelos;
  */
 public class Livro {
     
+    private Long id;
     private String titulo;
     private String autor;
     private String isbn;

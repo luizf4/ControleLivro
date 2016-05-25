@@ -23,7 +23,7 @@ public class BancoSQL {
             
 
             conn = DriverManager.getConnection(url, usuario, senha);
-            System.out.println("Conectado com o Banco de Dados!!!");
+            //System.out.println("Conectado com o Banco de Dados!!!");
 
         } catch (Exception ex) {
 
@@ -41,7 +41,7 @@ public class BancoSQL {
             if (conn != null) {
 
                 conn.close();
-                System.out.println("Desconectado do Banco de Dados!!!");
+                //System.out.println("Desconectado do Banco de Dados!!!");
             }
 
         } catch (Exception ex) {

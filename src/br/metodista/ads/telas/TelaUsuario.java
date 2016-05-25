@@ -4,7 +4,6 @@ import br.metodista.ads.modelos.Usuario;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -15,15 +14,14 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     /**
      * Creates new form TelaUsuario
      */
+    private Usuario selecionado = null;
+    private UsuarioTableModel usuarioTableModel = new UsuarioTableModel();
     private List<Usuario> usuarios = null;
+    int posicao = -1;
 
-    private int linhaSelecionada = -1;
-    Object[] options = {"Sim", "Não"};
+    public TelaUsuario() {
 
-    public TelaUsuario(List<Usuario> usuarios) {
-        this.usuarios = usuarios;
         initComponents();
-        carregarUsuarios();
         desabilitaBotao();
         desabilitaCaixa();
 
@@ -47,6 +45,8 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         jLabelUsuario = new javax.swing.JLabel();
         jLabelConfirmaSenha = new javax.swing.JLabel();
         jLabelSenha = new javax.swing.JLabel();
+        jLabelID = new javax.swing.JLabel();
+        lblID = new javax.swing.JLabel();
         jButtonNovo = new javax.swing.JButton();
         jButtonSalvar = new javax.swing.JButton();
         jButtonRemover = new javax.swing.JButton();
@@ -85,7 +85,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         txtNome.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jPanelDadosUsuario.add(txtNome);
-        txtNome.setBounds(20, 50, 490, 30);
+        txtNome.setBounds(140, 50, 400, 30);
 
         txtUsuario.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jPanelDadosUsuario.add(txtUsuario);
@@ -106,16 +106,16 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
         jPanelDadosUsuario.add(txtSenha);
-        txtSenha.setBounds(250, 110, 120, 30);
+        txtSenha.setBounds(270, 110, 120, 30);
 
         txtConfirmaSenha.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jPanelDadosUsuario.add(txtConfirmaSenha);
-        txtConfirmaSenha.setBounds(390, 110, 120, 30);
+        txtConfirmaSenha.setBounds(420, 110, 120, 30);
 
         jLabelNome.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelNome.setText("Nome:");
         jPanelDadosUsuario.add(jLabelNome);
-        jLabelNome.setBounds(10, 30, 50, 17);
+        jLabelNome.setBounds(130, 30, 50, 17);
 
         jLabelUsuario.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelUsuario.setText("Usuário:");
@@ -125,12 +125,24 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         jLabelConfirmaSenha.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelConfirmaSenha.setText("Confirmar Senha:");
         jPanelDadosUsuario.add(jLabelConfirmaSenha);
-        jLabelConfirmaSenha.setBounds(360, 90, 130, 17);
+        jLabelConfirmaSenha.setBounds(390, 90, 130, 17);
 
         jLabelSenha.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelSenha.setText("Senha:");
         jPanelDadosUsuario.add(jLabelSenha);
-        jLabelSenha.setBounds(240, 90, 48, 17);
+        jLabelSenha.setBounds(260, 90, 48, 17);
+
+        jLabelID.setText("ID:");
+        jPanelDadosUsuario.add(jLabelID);
+        jLabelID.setBounds(20, 30, 30, 16);
+
+        lblID.setBackground(new java.awt.Color(0, 0, 0));
+        lblID.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblID.setForeground(new java.awt.Color(255, 0, 0));
+        lblID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblID.setOpaque(true);
+        jPanelDadosUsuario.add(lblID);
+        lblID.setBounds(20, 50, 110, 30);
 
         jButtonNovo.setMnemonic('N');
         jButtonNovo.setText("Novo");
@@ -171,31 +183,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         jPanelTabela.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dados", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
         jPanelTabela.setLayout(null);
 
-        jTableUsuarios.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Nome:", "Usuário:"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        jTableUsuarios.setModel(usuarioTableModel);
         jTableUsuarios.setToolTipText("");
         jTableUsuarios.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTableUsuarios.setColumnSelectionAllowed(true);
+        jTableUsuarios.getTableHeader().setReorderingAllowed(false);
         jTableUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableUsuariosMouseClicked(evt);
@@ -205,12 +197,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane1.setViewportView(jTableUsuarios);
-        if (jTableUsuarios.getColumnModel().getColumnCount() > 0) {
-            jTableUsuarios.getColumnModel().getColumn(0).setResizable(false);
-            jTableUsuarios.getColumnModel().getColumn(0).setPreferredWidth(350);
-            jTableUsuarios.getColumnModel().getColumn(1).setResizable(false);
-            jTableUsuarios.getColumnModel().getColumn(1).setPreferredWidth(180);
-        }
+        jTableUsuarios.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jPanelTabela.add(jScrollPane1);
         jScrollPane1.setBounds(5, 24, 546, 247);
@@ -265,8 +252,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         String senha = Arrays.toString(txtSenha.getPassword());
         String confirmaSenha = Arrays.toString(txtConfirmaSenha.getPassword());
-        
-        
+
         if ("".equals(txtNome.getText())) {
 
             JOptionPane.showMessageDialog(this, "Nome é Obrigatório!!",
@@ -288,23 +274,41 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         } else {
 
-            Usuario u = obterUsuario(usuarios, txtUsuario.getText());
+            try {
 
-            if (u == null) {
+                if (lblID.getText().equals("")) {
+                    Usuario u = new Usuario(txtNome.getText(), txtUsuario.getText(),
+                            String.valueOf(txtSenha.getPassword()));
 
-                u = new Usuario();
-                u.setNome(txtNome.getText());
-                u.setLogin(txtUsuario.getText());
-                u.setSenha(new String(txtSenha.getPassword()));
+                    if (usuarioTableModel.adicionar(u, posicao) == false) {
 
-                usuarios.add(u);
-            } else {
+                        JOptionPane.showMessageDialog(this, "O Usuário já existe",
+                                "Cadastro de Usuário", JOptionPane.ERROR_MESSAGE);
+                        txtUsuario.grabFocus();
 
-                u.setNome(txtNome.getText());
-                u.setSenha(new String(txtSenha.getPassword()));
+                    } else {
+                        limparDados();
+
+                    }
+
+                } else {
+                    Usuario u = new Usuario(Long.parseLong(lblID.getText()),
+                            txtNome.getText(), txtUsuario.getText(),
+                            String.valueOf(txtSenha.getPassword()));
+
+                    usuarioTableModel.adicionar(u, posicao);
+                    
+                    limparDados();
+                    desabilitaCaixa();
+                    desabilitaBotao();
+
+                }
+
+            } catch (Exception ex) {
+
+                System.out.println("Erro Salvar: " + ex.getMessage());
+                ex.printStackTrace();
             }
-            carregarUsuarios();
-            limparDados();
 
         }
 
@@ -314,47 +318,60 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         limparDados();
         jButtonSalvar.setEnabled(true);
+        jButtonRemover.setEnabled(false);
         jButtonNovo.setEnabled(false);
 
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
     private void jTableUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableUsuariosMouseClicked
 
-        linhaSelecionada = jTableUsuarios.getSelectedRow();
-        Usuario u = usuarios.get(linhaSelecionada);
-        preencherDadosUsuario(u);
-        jButtonRemover.setEnabled(true);
-        habilitaCaixa();
-        jButtonSalvar.setEnabled(true);
-        jButtonNovo.setEnabled(true);
+        try {
 
+            Usuario u = usuarioTableModel.getUsuarios(jTableUsuarios.getSelectedRow());
+            posicao = jTableUsuarios.getSelectedRow();
+            lblID.setText(String.valueOf(u.getId()));
+            txtNome.setText(u.getNome());
+            txtUsuario.setText(u.getLogin());
+            txtSenha.setText(u.getSenha());
+            selecionado = u;
+            jButtonRemover.setEnabled(true);
+            habilitaCaixa();
+            jButtonSalvar.setEnabled(true);
+            jButtonNovo.setEnabled(true);
+            txtUsuario.setEnabled(false);
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+        }
 
     }//GEN-LAST:event_jTableUsuariosMouseClicked
 
     private void jButtonRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverActionPerformed
 
-        if (linhaSelecionada != -1) {
-            if (JOptionPane.showOptionDialog(this, "Deseja Excluir o Registro?", "Exclusão",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION) {
+        try {
 
-                usuarios.remove(linhaSelecionada);
-                ((DefaultTableModel) jTableUsuarios.getModel()).removeRow(linhaSelecionada);
+            if (usuarioTableModel.remover(selecionado) == true) {
+
+                JOptionPane.showMessageDialog(this, "Registro Excluido",
+                        "EXCLUSÃO", JOptionPane.INFORMATION_MESSAGE);
                 limparDados();
                 desabilitaBotao();
                 desabilitaCaixa();
-                jButtonNovo.setEnabled(true);
 
             } else {
 
-                JOptionPane.showMessageDialog(this, "Cancelado!!!", "Exclusão", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(this, "O Registro não foi Excluído",
+                        "EXCLUSÃO", JOptionPane.ERROR_MESSAGE);
 
             }
-        } else {
 
-            JOptionPane.showMessageDialog(this, "Selecione um registro para Excluir!", "Exclusão", JOptionPane.OK_OPTION);
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
 
         }
-
 
     }//GEN-LAST:event_jButtonRemoverActionPerformed
 
@@ -408,6 +425,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButtonRemover;
     private javax.swing.JButton jButtonSalvar;
     private javax.swing.JLabel jLabelConfirmaSenha;
+    private javax.swing.JLabel jLabelID;
     private javax.swing.JLabel jLabelNome;
     private javax.swing.JLabel jLabelSenha;
     private javax.swing.JLabel jLabelUsuario;
@@ -415,55 +433,25 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanelTabela;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableUsuarios;
+    private javax.swing.JLabel lblID;
     private javax.swing.JPasswordField txtConfirmaSenha;
     private javax.swing.JTextField txtNome;
     private javax.swing.JPasswordField txtSenha;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
 
-    private void carregarUsuarios() {
-
-        for (int cont = jTableUsuarios.getRowCount() - 1; cont >= 0; cont--) {
-
-            ((DefaultTableModel) jTableUsuarios.getModel()).removeRow(cont);
-
-        }
-
-        for (Usuario u : usuarios) {
-
-            ((DefaultTableModel) jTableUsuarios.getModel()).addRow(u.carregarGrid());
-
-        }
-    }
-
-    private Usuario obterUsuario(List<Usuario> usuarios, String login) {
-
-        Usuario usuario = null;
-
-        for (Usuario u : usuarios) {
-
-            if (u.getLogin().equals(login)) {
-
-                usuario = u;
-                break;
-
-            }
-        }
-
-        return usuario;
-    }
-
     private void limparDados() {
 
+        this.lblID.setText("");
         this.txtNome.setText("");
         this.txtUsuario.setText("");
         this.txtSenha.setText("");
         this.txtConfirmaSenha.setText("");
         this.txtNome.requestFocus();
-        this.linhaSelecionada = -1;
         this.txtNome.setEnabled(true);
         this.txtUsuario.setEnabled(true);
         this.txtSenha.setEnabled(true);
+        posicao = -1;
 
     }
 
@@ -494,14 +482,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         this.txtUsuario.setEnabled(false);
         this.txtSenha.setEnabled(false);
         this.txtConfirmaSenha.setEnabled(false);
-    }
-
-    private void preencherDadosUsuario(Usuario u) {
-
-        this.txtNome.setText(u.getNome());
-        this.txtUsuario.setText(u.getLogin());
-        this.txtSenha.setText(u.getSenha());
-
     }
 
     private void habilitaConfirmaSenha() {

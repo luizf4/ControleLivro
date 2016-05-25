@@ -242,7 +242,7 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItemSubGerenciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSubGerenciarActionPerformed
 
         if (verificaTelaUsuario == false) {
-            TelaUsuario telaUsuario = new TelaUsuario(usuarios);
+            TelaUsuario telaUsuario = new TelaUsuario();
             jDesktopPane1.remove(telaUsuario);
             jDesktopPane1.add(telaUsuario);
             telaUsuario.setVisible(true);
@@ -300,7 +300,7 @@ public class Principal extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }

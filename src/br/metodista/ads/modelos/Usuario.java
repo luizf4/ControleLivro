@@ -22,6 +22,27 @@ public class Usuario {
         this.senha = senha;
     }
 
+    public Usuario(Long id, String nome, String login) {
+        this.id = id;
+        this.nome = nome;
+        this.login = login;
+    }
+
+    public Usuario(String nome, String login, String senha) {
+        this.nome = nome;
+        this.login = login;
+        this.senha = senha;
+    }
+        
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -45,19 +66,20 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+    
+    
+ 
 
-    public Long getId() {
-        return id;
-    }
+    
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Object[] carregarGrid() {
-
-        return new Object[]{nome, login};
-
+//    public Object[] carregarGrid() {
+//
+//        return new Object[]{nome, login};
+//
+//    }
+    @Override
+    public String toString() {
+        return "\nID: " + id + "\nNome: " + nome + "\nLogin: " + login;
     }
 
 }
