@@ -255,7 +255,7 @@ public class Principal extends javax.swing.JFrame {
 
         if (verificaTelalivro == false) {   
 
-            TelaLivro telaLivro = new TelaLivro(livros);
+            TelaLivro telaLivro = new TelaLivro();
             jDesktopPane1.remove(telaLivro);
             jDesktopPane1.add(telaLivro);
             telaLivro.setVisible(true);

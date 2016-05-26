@@ -7,7 +7,6 @@ import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -15,8 +14,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TelaLivro extends javax.swing.JInternalFrame {
 
+    private Livro livroSelecionado = null;
     private List<Livro> livros = null;
-    private int linhaSelecionada = -1;
+    private LivroTableModel livroTableModel = new LivroTableModel();
+    int posicao = -1;
 
     Object[] options = {"Sim", "Não"};
 
@@ -25,12 +26,11 @@ public class TelaLivro extends javax.swing.JInternalFrame {
      *
      * @param livros
      */
-    public TelaLivro(List<Livro> livros) {
+    public TelaLivro() {
 
-        this.livros = livros;
         initComponents();
-        carregarLivros();
         desabilitaBotoes();
+        desabilitaCaixaTexto();
 
     }
 
@@ -54,6 +54,8 @@ public class TelaLivro extends javax.swing.JInternalFrame {
         jLabelEdicao = new javax.swing.JLabel();
         jFormattedPaginas = new javax.swing.JFormattedTextField();
         jFormattedEdicao = new javax.swing.JFormattedTextField();
+        jLabelTituloID = new javax.swing.JLabel();
+        jLabelID = new javax.swing.JLabel();
         jButtonNovo = new javax.swing.JButton();
         jButtonSalvar = new javax.swing.JButton();
         jButtonRemover = new javax.swing.JButton();
@@ -92,7 +94,7 @@ public class TelaLivro extends javax.swing.JInternalFrame {
         jTextFieldTitulo.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jTextFieldTitulo.setEnabled(false);
         jPanelCadastroLivro.add(jTextFieldTitulo);
-        jTextFieldTitulo.setBounds(30, 60, 600, 30);
+        jTextFieldTitulo.setBounds(150, 60, 480, 30);
 
         jTextFieldAutor.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jTextFieldAutor.setEnabled(false);
@@ -107,7 +109,7 @@ public class TelaLivro extends javax.swing.JInternalFrame {
         jLabelTitulo.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelTitulo.setText("Título:");
         jPanelCadastroLivro.add(jLabelTitulo);
-        jLabelTitulo.setBounds(20, 30, 70, 30);
+        jLabelTitulo.setBounds(140, 30, 70, 30);
 
         jLabelAutor.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelAutor.setText("Autor:");
@@ -141,6 +143,18 @@ public class TelaLivro extends javax.swing.JInternalFrame {
         jFormattedEdicao.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jPanelCadastroLivro.add(jFormattedEdicao);
         jFormattedEdicao.setBounds(450, 200, 180, 30);
+
+        jLabelTituloID.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabelTituloID.setText("ID:");
+        jPanelCadastroLivro.add(jLabelTituloID);
+        jLabelTituloID.setBounds(30, 40, 18, 17);
+
+        jLabelID.setBackground(new java.awt.Color(0, 0, 0));
+        jLabelID.setForeground(new java.awt.Color(255, 0, 0));
+        jLabelID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelID.setOpaque(true);
+        jPanelCadastroLivro.add(jLabelID);
+        jLabelID.setBounds(30, 60, 110, 30);
 
         jButtonNovo.setMnemonic('N');
         jButtonNovo.setText("Novo");
@@ -181,41 +195,18 @@ public class TelaLivro extends javax.swing.JInternalFrame {
         jPanelDadosLivro.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dados", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
         jPanelDadosLivro.setLayout(null);
 
-        jTableDadosLivro.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Título", "Autor", "ISBN", "Páginas", "Edição"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        jTableDadosLivro.setModel(livroTableModel);
         jTableDadosLivro.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTableDadosLivro.getTableHeader().setReorderingAllowed(false);
         jTableDadosLivro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableDadosLivroMouseClicked(evt);
             }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTableDadosLivroMouseReleased(evt);
+            }
         });
         jScrollPane1.setViewportView(jTableDadosLivro);
-        if (jTableDadosLivro.getColumnModel().getColumnCount() > 0) {
-            jTableDadosLivro.getColumnModel().getColumn(0).setResizable(false);
-            jTableDadosLivro.getColumnModel().getColumn(0).setPreferredWidth(300);
-            jTableDadosLivro.getColumnModel().getColumn(1).setResizable(false);
-            jTableDadosLivro.getColumnModel().getColumn(1).setPreferredWidth(300);
-            jTableDadosLivro.getColumnModel().getColumn(2).setResizable(false);
-            jTableDadosLivro.getColumnModel().getColumn(2).setPreferredWidth(120);
-            jTableDadosLivro.getColumnModel().getColumn(3).setResizable(false);
-            jTableDadosLivro.getColumnModel().getColumn(3).setPreferredWidth(80);
-            jTableDadosLivro.getColumnModel().getColumn(4).setResizable(false);
-            jTableDadosLivro.getColumnModel().getColumn(4).setPreferredWidth(80);
-        }
 
         jPanelDadosLivro.add(jScrollPane1);
         jScrollPane1.setBounds(10, 20, 630, 280);
@@ -268,68 +259,75 @@ public class TelaLivro extends javax.swing.JInternalFrame {
 
             if ("".equals(jTextFieldTitulo.getText())) {
 
-                JOptionPane.showMessageDialog(this, "Titulo é Obrigatório!", 
-                        "Erro", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(this, "Titulo é Obrigatório!",
+                        "Erro Título", JOptionPane.OK_OPTION);
                 jTextFieldTitulo.requestFocus();
 
             } else if ("".equals(jTextFieldAutor.getText())) {
 
-                JOptionPane.showMessageDialog(this, "Autor é Obrigatório!", 
-                        "Erro", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(this, "Autor é Obrigatório!",
+                        "Erro Autor", JOptionPane.OK_OPTION);
                 jTextFieldAutor.requestFocus();
 
             } else if ("".equals(jTextFieldISBN.getText())) {
 
-                JOptionPane.showMessageDialog(this, "ISBN de 13 digitos é Obrigatório!", 
-                        "Erro", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(this, "ISBN de 13 "
+                        + "digitos é Obrigatório!",
+                        "Erro ISBN", JOptionPane.OK_OPTION);
+                jTextFieldISBN.requestFocus();
+            } else if (jTextFieldISBN.getText().length() > 13) {
+
+                JOptionPane.showMessageDialog(this, "ISBN Não pode execeder "
+                        + "13 Digitos!",
+                        "Erro ISBN", JOptionPane.OK_OPTION);
                 jTextFieldISBN.requestFocus();
 
             } else if ("0".equals(jFormattedPaginas.getText())) {
 
-                JOptionPane.showMessageDialog(this, "Um livro não pode ter 0 Páginas!",
-                        "Erro", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(this, "Um livro não pode "
+                        + "ter 0 Páginas!",
+                        "Erro Páginas", JOptionPane.OK_OPTION);
                 jFormattedPaginas.requestFocus();
 
             } else if ("0".equals(jFormattedEdicao.getText())) {
 
                 JOptionPane.showMessageDialog(this, "Edição não pode começar em 0!",
-                        "Erro", JOptionPane.OK_OPTION);
+                        "Erro Edição", JOptionPane.OK_OPTION);
                 jFormattedEdicao.requestFocus();
 
+            } else if (jLabelID.getText().equals("")) {
+
+                Livro l = new Livro(jTextFieldTitulo.getText(),
+                        jTextFieldAutor.getText(), jTextFieldISBN.getText(),
+                        Integer.valueOf(jFormattedPaginas.getText()),
+                        Integer.valueOf(jFormattedEdicao.getText()));
+
+                livroTableModel.adicionar(l, posicao);
+
             } else {
+                Livro l = new Livro(Long.parseLong(jLabelID.getText()), 
+                        jTextFieldTitulo.getText(),
+                        jTextFieldAutor.getText(), jTextFieldISBN.getText(),
+                        Integer.valueOf(jFormattedPaginas.getText()),
+                        Integer.valueOf(jFormattedEdicao.getText()));
 
-                Livro i = obterLivro(livros, jTextFieldTitulo.getText());
+                livroTableModel.adicionar(l, posicao);
 
-                if (i == null) {
-
-                    i = new Livro();
-                    i.setTitulo(jTextFieldTitulo.getText());
-                    i.setAutor(jTextFieldAutor.getText());
-                    i.setIsbn(jTextFieldISBN.getText());
-                    i.setEdicao(Integer.parseInt(jFormattedEdicao.getText()));
-                    i.setPaginas(Integer.parseInt(jFormattedPaginas.getText()));
-
-                    livros.add(i);
-
-                } else {
-
-                    i.setAutor(jTextFieldAutor.getText());
-                    i.setIsbn(jTextFieldISBN.getText());
-                    i.setEdicao(Integer.parseInt(jFormattedEdicao.getText()));
-                    i.setPaginas(Integer.parseInt(jFormattedPaginas.getText()));
-
-                }
-
-                carregarLivros();
-                desabilitaBotoes();
-                limpaDados();
-                jButtonSalvar.setEnabled(true);
             }
+
+            desabilitaBotoes();
+            desabilitaCaixaTexto();
+            limpaDados();
 
         } catch (NumberFormatException ex) {
 
             JOptionPane.showMessageDialog(this, "Excedeu o Limite de '9' dígitos!",
                     "Erro", JOptionPane.OK_OPTION);
+        } catch (Exception ex) {
+
+            JOptionPane.showMessageDialog(this, ex.getMessage(),
+                    "Erro Salvar", JOptionPane.OK_OPTION);
+
         }
 
 
@@ -356,26 +354,46 @@ public class TelaLivro extends javax.swing.JInternalFrame {
     private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
 
         habilitaCaixaTexto();
+        jLabelID.setText("");
         limpaCaixaTexto(jPanelCadastroLivro);
         jTextFieldTitulo.requestFocus();
         habilitaBotoes();
         jButtonNovo.setEnabled(false);
+        jButtonRemover.setEnabled(false);
 
 
     }//GEN-LAST:event_jButtonNovoActionPerformed
 
     private void jButtonRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverActionPerformed
 
-        livros.remove(linhaSelecionada);
+        try {
 
-        ((DefaultTableModel) jTableDadosLivro.getModel()).removeRow(linhaSelecionada);
+            if (livroTableModel.remover(livroSelecionado) == true) {
 
-        desabilitaCaixaTexto();
-        desabilitaBotoes();
-        limpaCaixaTexto(jPanelCadastroLivro);
-        jTextFieldAutor.setText("");
-        jTextFieldAutor.setEnabled(false);
-        jButtonNovo.setEnabled(true);
+                JOptionPane.showMessageDialog(this, "Registro Excluido",
+                        "EXCLUSÃO", JOptionPane.INFORMATION_MESSAGE);
+
+                desabilitaCaixaTexto();
+                desabilitaBotoes();
+                limpaCaixaTexto(jPanelCadastroLivro);
+                jLabelID.setText("");
+                jTextFieldAutor.setText("");
+                jTextFieldAutor.setEnabled(false);
+                jButtonNovo.setEnabled(true);
+
+            } else {
+
+                JOptionPane.showMessageDialog(this, "O Registro não foi Excluído",
+                        "Exclusão Registro", JOptionPane.ERROR_MESSAGE);
+
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+        }
+
 
     }//GEN-LAST:event_jButtonRemoverActionPerformed
 
@@ -387,60 +405,37 @@ public class TelaLivro extends javax.swing.JInternalFrame {
 
     private void jTableDadosLivroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDadosLivroMouseClicked
 
-        habilitaCaixaTexto();
-        linhaSelecionada = jTableDadosLivro.getSelectedRow();
-        Livro u = livros.get(linhaSelecionada);
-        preencharDadosLivro(u);
-        this.jTextFieldTitulo.setEnabled(false);
-        this.jButtonNovo.setEnabled(false);
-        habilitaBotoes();
+        try {
 
+            Livro l = livroTableModel.getLivros(jTableDadosLivro.getSelectedRow());
+            posicao = jTableDadosLivro.getSelectedRow();
+            jLabelID.setText(String.valueOf(l.getId()));
+            jTextFieldTitulo.setText(l.getTitulo());
+            jTextFieldAutor.setText(l.getAutor());
+            jTextFieldISBN.setText(l.getIsbn());
+            jFormattedPaginas.setText(String.valueOf(l.getPaginas()));
+            jFormattedEdicao.setText(String.valueOf(l.getEdicao()));
+            livroSelecionado = l;
+            habilitaCaixaTexto();
+            habilitaBotoes();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+        }
 
     }//GEN-LAST:event_jTableDadosLivroMouseClicked
 
-    private void carregarLivros() {
+    private void jTableDadosLivroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDadosLivroMouseReleased
 
-        for (int cont = jTableDadosLivro.getRowCount() - 1; cont >= 0; cont--) {
+        limpaDados();
+        desabilitaBotoes();
+        desabilitaCaixaTexto();
+        jButtonNovo.setEnabled(true);
 
-            ((DefaultTableModel) jTableDadosLivro.getModel()).removeRow(cont);
 
-        }
-
-        for (Livro i : livros) {
-
-            ((DefaultTableModel) jTableDadosLivro.getModel()).addRow(i.carregarGrid());
-
-        }
-
-    }
-
-    private void preencharDadosLivro(Livro i) {
-
-        this.jTextFieldTitulo.setText(i.getTitulo());
-        this.jTextFieldAutor.setText(i.getAutor());
-        this.jTextFieldISBN.setText(i.getIsbn());
-        this.jFormattedPaginas.setText(String.valueOf(i.getPaginas()));
-        this.jFormattedEdicao.setText(String.valueOf(i.getEdicao()));
-
-    }
-
-    private Livro obterLivro(List<Livro> livros, String titulo) {
-
-        Livro livro = null;
-
-        for (Livro u : livros) {
-
-            if (u.getTitulo().equals(titulo)) {
-
-                livro = u;
-
-                break;
-            }
-
-        }
-
-        return livro;
-    }
+    }//GEN-LAST:event_jTableDadosLivroMouseReleased
 
     public static void limpaCaixaTexto(Container container) {
 
@@ -501,9 +496,10 @@ public class TelaLivro extends javax.swing.JInternalFrame {
     private void limpaDados() {
 
         limpaCaixaTexto(jPanelCadastroLivro);
-        this.linhaSelecionada = -1;
         habilitaCaixaTexto();
+        jLabelID.setText("");
         jTextFieldTitulo.requestFocus();
+        posicao = -1;
 
     }
 
@@ -517,9 +513,11 @@ public class TelaLivro extends javax.swing.JInternalFrame {
     private javax.swing.JFormattedTextField jFormattedPaginas;
     private javax.swing.JLabel jLabelAutor;
     private javax.swing.JLabel jLabelEdicao;
+    private javax.swing.JLabel jLabelID;
     private javax.swing.JLabel jLabelISBN;
     private javax.swing.JLabel jLabelPaginas;
     private javax.swing.JLabel jLabelTitulo;
+    private javax.swing.JLabel jLabelTituloID;
     private javax.swing.JPanel jPanelCadastroLivro;
     private javax.swing.JPanel jPanelDadosLivro;
     private javax.swing.JScrollPane jScrollPane1;

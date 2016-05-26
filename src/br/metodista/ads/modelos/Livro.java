@@ -2,12 +2,10 @@ package br.metodista.ads.modelos;
 
 /**
  *
- * @author Luiz Fernando de Souza
- * ADS - EAD Sorocaba
- * Matricula: 225272
+ * @author Luiz Fernando de Souza ADS - EAD Sorocaba Matricula: 225272
  */
 public class Livro {
-    
+
     private Long id;
     private String titulo;
     private String autor;
@@ -15,6 +13,28 @@ public class Livro {
     private int paginas;
     private int edicao;
     private Emprestimo emprestimo;
+
+    private Livro() {
+
+    }
+    //Construtor Completo
+    public Livro(Long id, String titulo, String autor, String isbn,
+            int paginas, int edicao) {
+        this.id = id;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.paginas = paginas;
+        this.edicao = edicao;
+    }
+    //Construtor para o método salvar do DAO
+    public Livro(String titulo, String autor, String isbn, int paginas, int edicao) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.paginas = paginas;
+        this.edicao = edicao;        
+    }
 
     public String getTitulo() {
         return titulo;
@@ -63,13 +83,21 @@ public class Livro {
     public void setEmprestimo(Emprestimo emprestimo) {
         this.emprestimo = emprestimo;
     }
-    
-    public Object[] carregarGrid(){
-        
-        String temEmprestimo = emprestimo == null ? "Disponível" : 
-                emprestimo.getUsuario().getNome();
-        
-        return new Object[] {titulo, autor, isbn, paginas, edicao,
-        temEmprestimo};
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Object[] carregarGrid() {
+
+        String temEmprestimo = emprestimo == null ? "Disponível"
+                : emprestimo.getUsuario().getNome();
+
+        return new Object[]{titulo, autor, isbn, paginas, edicao,
+            temEmprestimo};
     }
 }
