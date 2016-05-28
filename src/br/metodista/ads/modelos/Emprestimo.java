@@ -10,10 +10,33 @@ import java.util.Date;
  */
 public class Emprestimo {
 
+    private Long id;
     private Date dataEmprestimo;
     private Date dataDevolucao;
     private Livro livro;
     private Usuario usuario;
+
+    public Emprestimo() {
+
+    }
+
+    public Emprestimo(Livro livro, Usuario usuario) {
+        this.livro = livro;
+        this.usuario = usuario;
+    }    
+
+    public Emprestimo(Long id, Date dataEmprestimo, Date dataDevolucao,
+            Livro livro, Usuario usuario) {
+        
+        this.id = id;
+        this.dataEmprestimo = dataEmprestimo;
+        this.dataDevolucao = dataDevolucao;
+        this.livro = livro;
+        this.usuario = usuario;
+        
+    }
+    
+    
 
     public Date getDataEmprestimo() {
         return dataEmprestimo;
@@ -47,9 +70,31 @@ public class Emprestimo {
         this.usuario = usuario;
     }
 
-    public Object[] carregarGrid() {
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        return new Object[]{getUsuario().getNome(), livro.getTitulo(), df.format(getDataEmprestimo())};
+    public Long getId() {
+        return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+//    
+//    
+//
+//    public Object[] carregarGrid() {
+//        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+//        return new Object[]{getUsuario().getNome(), livro.getTitulo(), df.format(getDataEmprestimo())};
+//    }
+
+    @Override
+    public String toString() {
+        return "\nEmprestimo\n" + "\nid: " + id + "\ndataEmprestimo=" + dataEmprestimo 
+                + "\nDataDevolucao:" + dataDevolucao + "\nLivro" + livro.getAutor() +
+                "Emprestado?: " + livro.getEmprestado()
+                + "\nUsuario=" + usuario.getId();
+    }
+
+    
+    
+    
 
 }

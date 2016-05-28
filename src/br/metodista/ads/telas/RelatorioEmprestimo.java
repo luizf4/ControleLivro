@@ -181,18 +181,8 @@ public class RelatorioEmprestimo extends javax.swing.JInternalFrame {
 
     private void carregarRelatorio() {
 
-        //Remove todos os livros da tabela.
-        for (int cont = jTableRelatorioEmprestimos.getRowCount() - 1; cont >= 0; cont--) {
-            ((DefaultTableModel) jTableRelatorioEmprestimos.getModel()).removeRow(cont);
-        }
-        //Adiciona todos os livros na tabela.
-        for (Emprestimo e : emprestimos) {
-        /* Só adiciona no relatório os emprestimos que ainda estão em
-            andamento. */
-            if (e.getDataDevolucao() == null) {
-                ((DefaultTableModel) jTableRelatorioEmprestimos.getModel()).addRow(e.carregarGrid());
-            }
-        }
+        
+        
 
     }
 }

@@ -12,9 +12,9 @@ public class Livro {
     private String isbn;
     private int paginas;
     private int edicao;
-    private Emprestimo emprestimo;
+    private int emprestado;   
 
-    private Livro() {
+    public Livro() {
 
     }
     //Construtor Completo
@@ -26,6 +26,7 @@ public class Livro {
         this.isbn = isbn;
         this.paginas = paginas;
         this.edicao = edicao;
+        
     }
     //Construtor para o método salvar do DAO
     public Livro(String titulo, String autor, String isbn, int paginas, int edicao) {
@@ -35,6 +36,18 @@ public class Livro {
         this.paginas = paginas;
         this.edicao = edicao;        
     }
+
+    public Livro(Long id, String titulo, String autor, String isbn, int paginas, int edicao, int emprestado) {
+        this.id = id;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.paginas = paginas;
+        this.edicao = edicao;
+        this.emprestado = emprestado;
+    }
+    
+    
 
     public String getTitulo() {
         return titulo;
@@ -74,15 +87,7 @@ public class Livro {
 
     public void setEdicao(int edicao) {
         this.edicao = edicao;
-    }
-
-    public Emprestimo getEmprestimo() {
-        return emprestimo;
-    }
-
-    public void setEmprestimo(Emprestimo emprestimo) {
-        this.emprestimo = emprestimo;
-    }
+    }    
 
     public Long getId() {
         return id;
@@ -92,12 +97,22 @@ public class Livro {
         this.id = id;
     }
 
-    public Object[] carregarGrid() {
+    
+    
+//    public Object[] carregarGrid() {
+//
+//        String temEmprestimo = emprestimo == null ? "Disponível"
+//                : emprestimo.getUsuario().getNome();
+//
+//        return new Object[]{titulo, autor, isbn, paginas, edicao,
+//            temEmprestimo};
+//    }
 
-        String temEmprestimo = emprestimo == null ? "Disponível"
-                : emprestimo.getUsuario().getNome();
+    public int getEmprestado() {
+        return emprestado;
+    }
 
-        return new Object[]{titulo, autor, isbn, paginas, edicao,
-            temEmprestimo};
+    public void setEmprestado(int emprestado) {
+        this.emprestado = emprestado;
     }
 }

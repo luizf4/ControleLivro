@@ -1,12 +1,12 @@
 package br.metodista.ads.telas;
 
+import br.metodista.ads.dao.UsuarioDAO;
 import br.metodista.ads.modelos.Emprestimo;
 import br.metodista.ads.modelos.Livro;
 import br.metodista.ads.modelos.Usuario;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -17,20 +17,25 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
     /**
      * Creates new form TelaEmprestimo
      */
+    private Emprestimo emprestimoSelecionado = null;
     private List<Usuario> usuarios;
     private List<Livro> livros;
     private List<Emprestimo> emprestimos;
+    private Long[] ids = null;
+    int posicao = -1;
 
-    public TelaEmprestimo(List<Usuario> usuarios, List<Livro> livros,
-            List<Emprestimo> emprestimos) {
-        initComponents();
+    private EmprestimoTableModel emprestimoTableModelo = new EmprestimoTableModel();
 
-        this.usuarios = usuarios;
-        this.livros = livros;
-        this.emprestimos = emprestimos;
-        initComponents();
-        carregarUsuarios();
-        carregarLivros();
+    public TelaEmprestimo() {
+
+        try {
+            initComponents();
+            carregarUsuarios();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+        }
+
     }
 
     /**
@@ -45,6 +50,8 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
         jPanelEnmprestimo = new javax.swing.JPanel();
         jLabelUsuario = new javax.swing.JLabel();
         jComboBoxUsuarios = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabelIDUsuario = new javax.swing.JLabel();
         jPanelDadosEmprestimo = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableEmprestimo = new javax.swing.JTable();
@@ -82,48 +89,45 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
         jLabelUsuario.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabelUsuario.setText("Usuário:");
         jPanelEnmprestimo.add(jLabelUsuario);
-        jLabelUsuario.setBounds(28, 36, 58, 17);
+        jLabelUsuario.setBounds(150, 30, 58, 17);
 
+        jComboBoxUsuarios.setBackground(new java.awt.Color(255, 255, 255));
         jComboBoxUsuarios.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jComboBoxUsuarios.setToolTipText("Usuários para Seleção");
+        jComboBoxUsuarios.setOpaque(false);
+        jComboBoxUsuarios.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxUsuariosItemStateChanged(evt);
+            }
+        });
         jPanelEnmprestimo.add(jComboBoxUsuarios);
-        jComboBoxUsuarios.setBounds(40, 59, 486, 34);
+        jComboBoxUsuarios.setBounds(160, 60, 486, 34);
+
+        jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel1.setText("ID:");
+        jPanelEnmprestimo.add(jLabel1);
+        jLabel1.setBounds(30, 30, 18, 17);
+
+        jLabelIDUsuario.setBackground(new java.awt.Color(0, 0, 0));
+        jLabelIDUsuario.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabelIDUsuario.setForeground(new java.awt.Color(255, 0, 0));
+        jLabelIDUsuario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelIDUsuario.setOpaque(true);
+        jPanelEnmprestimo.add(jLabelIDUsuario);
+        jLabelIDUsuario.setBounds(20, 60, 130, 30);
 
         jPanelDadosEmprestimo.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dados", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
         jPanelDadosEmprestimo.setLayout(null);
 
-        jTableEmprestimo.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Título", "Autor", "ISBN", "Páginas", "Edição", "Emprestado?"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        jTableEmprestimo.setModel(emprestimoTableModelo);
+        jTableEmprestimo.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTableEmprestimo.getTableHeader().setReorderingAllowed(false);
+        jTableEmprestimo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableEmprestimoMouseClicked(evt);
             }
         });
-        jTableEmprestimo.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jScrollPane1.setViewportView(jTableEmprestimo);
-        if (jTableEmprestimo.getColumnModel().getColumnCount() > 0) {
-            jTableEmprestimo.getColumnModel().getColumn(0).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(0).setPreferredWidth(300);
-            jTableEmprestimo.getColumnModel().getColumn(1).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(1).setPreferredWidth(300);
-            jTableEmprestimo.getColumnModel().getColumn(2).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(2).setPreferredWidth(120);
-            jTableEmprestimo.getColumnModel().getColumn(3).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(3).setPreferredWidth(80);
-            jTableEmprestimo.getColumnModel().getColumn(4).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(4).setPreferredWidth(80);
-            jTableEmprestimo.getColumnModel().getColumn(5).setResizable(false);
-            jTableEmprestimo.getColumnModel().getColumn(5).setPreferredWidth(85);
-        }
 
         jPanelDadosEmprestimo.add(jScrollPane1);
         jScrollPane1.setBounds(10, 30, 640, 320);
@@ -205,69 +209,63 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonEmprestarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEmprestarActionPerformed
-        int[] linhasSelecionadas = jTableEmprestimo.getSelectedRows();
 
-        if (jTableEmprestimo.getSelectedRow() == -1) {
+        Usuario u = new Usuario(Long.parseLong(jLabelIDUsuario.getText()),
+                jComboBoxUsuarios.getSelectedItem().toString());
 
-            JOptionPane.showMessageDialog(this, "Selecione um Livro para Emprestimo!",
-                    "Emprestimo", JOptionPane.OK_OPTION);
+        //Emprestimo e = new Emprestimo(emprestimoSelecionado.getLivro(), u);
+        Emprestimo e = new Emprestimo(null, new Date(),
+                null, emprestimoSelecionado.getLivro(), u);
 
-        } else //Verifica se os livros estão disponíveis.
-        {
-            if (todosLivrosDisponiveis(livros, linhasSelecionadas)) {
-                //Para cada livro selecionado faz um emprestimo
-                for (int cont = 0; cont < linhasSelecionadas.length; cont++) {
-                    int livroSelecionado = linhasSelecionadas[cont];
-                    Livro livro = livros.get(livroSelecionado);
-                    //Monta um emprestimo para o usuário e livro.
-                    Emprestimo e = new Emprestimo();
-                    e.setUsuario(getUsuarioSelecionado());
-                    e.setDataEmprestimo(new Date());
-                    e.setLivro(livro);
-                    //Adiciona o emprestimo na lista.
-                    emprestimos.add(e);
-                    //Marca que o livro foi emprestado.
-                    livro.setEmprestimo(e);
-                }
-                carregarLivros();
+        try {
 
-                JOptionPane.showMessageDialog(this, "Livro Emprestado para "
-                        + getUsuarioSelecionado().getNome() + " !!!",
-                        "Emprestimo", JOptionPane.OK_OPTION);
+            if (emprestimoSelecionado.getLivro().getEmprestado() != 1) {
+
+                emprestimoTableModelo.emprestar(e, posicao);
+                JOptionPane.showMessageDialog(this, "Livro Emprestado",
+                        "Emprestimo", JOptionPane.INFORMATION_MESSAGE);
+                
+                jComboBoxUsuarios.setSelectedIndex(-1);
+                jLabelIDUsuario.setText("");
+                
             } else {
-                JOptionPane.showMessageDialog(this, "Livro Indisponível para Emprestimo!", "Emprestimo",
-                        JOptionPane.INFORMATION_MESSAGE);
+
+                JOptionPane.showMessageDialog(this, "Livro Indisponível para Emprestimo!",
+                        "Emprestimo", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
         }
+
     }//GEN-LAST:event_jButtonEmprestarActionPerformed
 
     private void jButtonDevolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDevolverActionPerformed
 
-        int[] linhasSelecionadas = jTableEmprestimo.getSelectedRows();
+        try {
 
-        if (jTableEmprestimo.getSelectedRow() == -1) {
+            if (emprestimoSelecionado.getLivro().getEmprestado() == 1) {
+
+                Emprestimo e = new Emprestimo(null, null,
+                        new Date(), emprestimoSelecionado.getLivro(), null);
+
+                emprestimoTableModelo.devolver(e);
+                
+                JOptionPane.showMessageDialog(this, "Livro Devolvido!!!",
+                    "Devolução", JOptionPane.INFORMATION_MESSAGE);
+
+            } else {
+                
+               JOptionPane.showMessageDialog(this, "O livro está disponível!",
+                    "Emprestimo", JOptionPane.INFORMATION_MESSAGE); 
             
-            JOptionPane.showMessageDialog(this, "Selecione um Livro para Devolução!",
-                    "Devolução", JOptionPane.OK_OPTION);
-
-        } else {
-
-            for (int cont = 0; cont < linhasSelecionadas.length; cont++) {
-                int livroSelecionado = linhasSelecionadas[cont];
-                Livro livro = livros.get(livroSelecionado);
-
-                if (livro.getEmprestimo() != null) {
-                    Emprestimo emprestimo = livro.getEmprestimo();
-                    emprestimo.setDataDevolucao(new Date());
-                    livro.setEmprestimo(null);
-                }
             }
-            carregarLivros();
 
-            JOptionPane.showMessageDialog(this, "Livro(s) Devolvido(s)!!!",
-                    "Empréstimo", JOptionPane.INFORMATION_MESSAGE);
+            }catch (Exception ex) {
+            ex.printStackTrace();
+        }         
 
-        }
+
     }//GEN-LAST:event_jButtonDevolverActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
@@ -290,8 +288,18 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
 
     private void jButtonAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAtualizarActionPerformed
 
-        carregarUsuarios();
-        carregarLivros();
+        try {
+
+            carregarUsuarios();
+            jLabelIDUsuario.setText("");
+            posicao = -1; 
+            
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+
 
     }//GEN-LAST:event_jButtonAtualizarActionPerformed
 
@@ -301,6 +309,23 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_jButtonFecharActionPerformed
 
+    private void jTableEmprestimoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableEmprestimoMouseClicked
+
+        Emprestimo e = emprestimoTableModelo.getEmprestimos(jTableEmprestimo.getSelectedRow());
+        emprestimoSelecionado = e;
+        posicao = jTableEmprestimo.getSelectedRow();
+
+
+    }//GEN-LAST:event_jTableEmprestimoMouseClicked
+
+    private void jComboBoxUsuariosItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxUsuariosItemStateChanged
+
+        String idCombo = String.valueOf(ids[jComboBoxUsuarios.getSelectedIndex()]);
+
+        jLabelIDUsuario.setText(idCombo);
+
+    }//GEN-LAST:event_jComboBoxUsuariosItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAtualizar;
@@ -308,6 +333,8 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButtonEmprestar;
     private javax.swing.JButton jButtonFechar;
     private javax.swing.JComboBox<String> jComboBoxUsuarios;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabelIDUsuario;
     private javax.swing.JLabel jLabelUsuario;
     private javax.swing.JPanel jPanelDadosEmprestimo;
     private javax.swing.JPanel jPanelEnmprestimo;
@@ -315,62 +342,31 @@ public class TelaEmprestimo extends javax.swing.JInternalFrame {
     private javax.swing.JTable jTableEmprestimo;
     // End of variables declaration//GEN-END:variables
 
-    private void carregarUsuarios() {
+    private void carregarUsuarios() throws Exception {
 
-        String[] logins = new String[usuarios.size()];
+        try {
 
-        for (int cont = 0; cont < usuarios.size(); cont++) {
-            logins[cont] = usuarios.get(cont).getLogin();
-        }
-        //Cria um combo box com o vetor de logins.
-        jComboBoxUsuarios.setModel(new javax.swing.DefaultComboBoxModel(logins));
-    }
+            UsuarioDAO dao = new UsuarioDAO();
+            usuarios = dao.consultar();
 
-    private void carregarLivros() {
+            String[] logins = new String[usuarios.size()];
+            ids = new Long[(usuarios.size())];
 
-        //Remove todos os livros da tabela.
-        for (int cont = jTableEmprestimo.getRowCount() - 1; cont >= 0; cont--) {
-            ((DefaultTableModel) jTableEmprestimo.getModel()).removeRow(cont);
-        }
-        //Adiciona todos os livros na tabela.
-        for (Livro l : livros) {
-            ((DefaultTableModel) jTableEmprestimo.getModel()).addRow(l.carregarGrid());
-        }
-
-    }
-
-    private boolean todosLivrosDisponiveis(List<Livro> livros, int[] selecionados) {
-
-        boolean disponivel = true;
-
-        //Percorre todos os livros selecionados.
-        for (int cont = 0; cont < selecionados.length; cont++) {
-            int livroSelecionado = selecionados[cont];
-            if (livros.get(livroSelecionado).getEmprestimo() != null) {
-                //Se algum livro estiver emprestado, para de verificar e devolve false.
-                disponivel = false;
-                break;
+            for (int cont = 0; cont < usuarios.size(); cont++) {
+                logins[cont] = usuarios.get(cont).getLogin();
+                ids[cont] = usuarios.get(cont).getId();
             }
+
+            //Cria um combo box com o vetor de logins.
+            jComboBoxUsuarios.setModel(new javax.swing.DefaultComboBoxModel(logins));
+
+            jComboBoxUsuarios.setSelectedIndex(-1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
         }
 
-        return disponivel;
-
-    }
-
-    private Usuario getUsuarioSelecionado() {
-        //Obtem o usuário selecionado na lista.
-        String login = (String) jComboBoxUsuarios.getSelectedItem();
-        Usuario usuario = null;
-        //Percorre todos os usuário para verificar se existe um usuário com o login informado
-
-        for (Usuario u : usuarios) {
-            if (u.getLogin().equals(login)) {
-                usuario = u;
-                //Se encontrar o usuário, para de procurar.
-                break;
-            }
-        }
-        return usuario;
     }
 
 }

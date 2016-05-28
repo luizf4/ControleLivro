@@ -1,6 +1,8 @@
 package br.metodista.ads.telas;
 
+import br.metodista.ads.dao.EmprestimoDAO;
 import br.metodista.ads.dao.UsuarioDAO;
+import br.metodista.ads.modelos.Emprestimo;
 import br.metodista.ads.modelos.Usuario;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,10 @@ public class TesteConexao {
     public static void main(String[] args) throws Exception {
 
         UsuarioDAO dao = new UsuarioDAO();
+        EmprestimoDAO daoEmprestimo = new EmprestimoDAO();
         Usuario usuario = new Usuario();
         List<Usuario> lista = dao.consultar();
+        List<Emprestimo> emprestimos = daoEmprestimo.consultar();
 
 //        usuario.setNome("Gilce");
 //        usuario.setLogin("gilcinha");
@@ -28,20 +32,27 @@ public class TesteConexao {
 //         usuario.setLogin("angelo");
 //         usuario.setSenha("");
         //dao.salvar(usuario);
-        usuario.setId(24L);
+        //usuario.setId(24L);
 
-        if (dao.remover(usuario) == 1) {
-
-            System.out.println("Excluido");
-        } else {
-
-            System.out.println("Não excluiu");
+//        if (dao.remover(usuario) == 1) {
+//
+//            System.out.println("Excluido");
+//        } else {
+//
+//            System.out.println("Não excluiu");
+//        }
+//
+//        for (Usuario l : lista) {
+//
+//            System.out.println(l);
+//        }
+        
+        for (Emprestimo e: emprestimos){
+            
+            System.out.println(e);
         }
-
-        for (Usuario l : lista) {
-
-            System.out.println(l);
-        }
+        
+        
     }
 
 }

@@ -268,7 +268,7 @@ public class Principal extends javax.swing.JFrame {
         
         if (verificaTelaEmprestimo == false) {   
 
-            TelaEmprestimo telaEmprestimo = new TelaEmprestimo(usuarios, livros, emprestimos);
+            TelaEmprestimo telaEmprestimo = new TelaEmprestimo();
             jDesktopPane1.remove(telaEmprestimo);
             jDesktopPane1.add(telaEmprestimo);
             telaEmprestimo.setVisible(true);

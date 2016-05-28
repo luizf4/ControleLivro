@@ -33,6 +33,10 @@ public class Usuario {
         this.login = login;
         this.senha = senha;
     }
+    public Usuario(Long id, String login){
+        this.id = id;
+        this.login = login;
+    }
         
 
     public Long getId() {

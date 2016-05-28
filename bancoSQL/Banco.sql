@@ -1,3 +1,7 @@
+drop table usuario;
+drop table livro;
+drop table emprestimo;
+
 create sequence usuario_seq increment by 1 start with 1 nocache nocycle;
 
 create table usuario
@@ -8,7 +12,10 @@ create table usuario
     senha varchar2(6)
   
   );
-  
+
+select * from usuario;
+
+create sequence livro_seq increment by 1 start with 1 nocache nocycle;
 
 create table livro
 
@@ -18,27 +25,51 @@ create table livro
     autor  VARCHAR(200) not null,
     isbn varchar(13) not null,
     paginas INT not null,
-    edicao int not null
+    edicao int not null,
+    emprestado NUMBER(1) DEFAULT 0 NOT NULL
   
   );
-
-create sequence livro_seq increment by 1 start with 1 nocache nocycle;  
   
 
+select * from livro;
+
+create sequence emprestimo_seq increment by 1 start with 1 nocache nocycle;
+
+create table Emprestimo 
+  (
+    id number(8) primary key not null,
+    idUsuario number(8) not null,
+    idLivro number (8) not null,
+    dataEmprestimo date not null,
+    dataDevolucao date
+
+  );
   
-select * from usuario;
-select login from usuario where login = 'luizfs';
+alter table Emprestimo
+  add constraint fk_usuario_emprestimo 
+  FOREIGN key (idUsuario) references usuario(id);
 
-alter table usuario
+alter table Emprestimo
+  add constraint fk_livro_emprestimo 
+  FOREIGN key (idLivro) references livro(id);
 
-    add constraint login_un unique (login) ENABLE
-;
-
-update usuario set nome = 'maria abadia martins', senha = '123'
-  where id= 12;
+  
+select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, us.LOGIN  , liv.emprestado
+  
+  from livro liv
+  
+  left outer join emprestimo emp
+  on (liv.ID = emp.IDLIVRO)
+  
+  left outer join usuario us
+  on (emp.IDUSUARIO = us.id)  
+  order by liv.TITULO;
+  
+  select * from livro
+  order by livro.titulo;
+  select * from emprestimo;
   
   
-  DELETE FROM USUARIO
-    WHERE id = 24;
+  select * from emprestimo
+    WHERE IDLIVRO = 2 and DATADEVOLUCAO is null;
 
-drop table usuario;
