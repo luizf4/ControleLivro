@@ -54,7 +54,7 @@ alter table Emprestimo
   FOREIGN key (idLivro) references livro(id);
 
   
-select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, us.LOGIN  , liv.emprestado
+select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, us.LOGIN, liv.emprestado
   
   from livro liv
   
@@ -62,7 +62,8 @@ select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, us.LOGI
   on (liv.ID = emp.IDLIVRO)
   
   left outer join usuario us
-  on (emp.IDUSUARIO = us.id)  
+  on (emp.IDUSUARIO = us.id and emp.DATADEVOLUCAO is null)
+  
   order by liv.TITULO;
   
   select * from livro
@@ -72,4 +73,27 @@ select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, us.LOGI
   
   select * from emprestimo
     WHERE IDLIVRO = 2 and DATADEVOLUCAO is null;
+    
+ select  liv.titulo, liv.autor, liv.isbn, liv.paginas, liv.edicao, us.ID, 
+ us.LOGIN, liv.emprestado, emp.DATAEMPRESTIMO, emp.DATADEVOLUCAO
+  
+  from livro liv
+  
+  left outer join emprestimo emp
+  on (liv.ID = emp.IDLIVRO)
+  
+  left outer join usuario us
+  on (emp.IDUSUARIO = us.id)
+  
+  order by liv.TITULO;  
+  
+
+
+select liv.id, liv.titulo, us.LOGIN from emprestimo emp
+  inner join livro liv
+  on (emp.IDLIVRO = liv.ID)
+  
+  inner join usuario us
+  on (emp.IDUSUARIO = us.id)  
+  WHERE emp.datadevolucao is not null;
 

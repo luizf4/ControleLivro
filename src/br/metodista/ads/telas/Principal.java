@@ -280,7 +280,7 @@ public class Principal extends javax.swing.JFrame {
         
         if (verificaTelaRelatorio == false) {   
 
-            RelatorioEmprestimo relatorioEmprestimo = new RelatorioEmprestimo(emprestimos);
+            RelatorioEmprestimo relatorioEmprestimo = new RelatorioEmprestimo();
             jDesktopPane1.remove(relatorioEmprestimo);
             jDesktopPane1.add(relatorioEmprestimo);
             relatorioEmprestimo.setVisible(true);

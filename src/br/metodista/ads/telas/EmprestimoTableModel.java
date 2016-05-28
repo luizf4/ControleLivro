@@ -13,7 +13,7 @@ import javax.swing.table.AbstractTableModel;
 public class EmprestimoTableModel extends AbstractTableModel {
 
     private List<Emprestimo> emprestimos = new ArrayList<Emprestimo>();
-    EmprestimoDAO dao = new EmprestimoDAO();
+    EmprestimoDAO dao = new EmprestimoDAO();    
 
     public EmprestimoTableModel() {
 

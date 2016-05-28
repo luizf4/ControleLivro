@@ -2,23 +2,21 @@ package br.metodista.ads.telas;
 
 import br.metodista.ads.modelos.Emprestimo;
 import java.util.List;
-import javax.swing.table.DefaultTableModel;
-
 /**
  *
  * @author Luiz Fernando de Souza ADS - EAD Sorocaba Matricula: 225272
  */
 public class RelatorioEmprestimo extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form RelatorioEmprestimo
-     */
+    private RelatorioTableModel tabelaModelo = new RelatorioTableModel();
+    
+    
     private List<Emprestimo> emprestimos;
 
-    public RelatorioEmprestimo(List<Emprestimo> emprestimos) {
-        this.emprestimos = emprestimos;
+    public RelatorioEmprestimo() {
+        
         initComponents();
-        carregarRelatorio();
+        
     }
 
     /**
@@ -62,34 +60,12 @@ public class RelatorioEmprestimo extends javax.swing.JInternalFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relatório de Emprestimos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
         jPanel1.setLayout(null);
 
-        jTableRelatorioEmprestimos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Usuário", "Título", "Data de Empréstimo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        jTableRelatorioEmprestimos.setModel(tabelaModelo);
         jTableRelatorioEmprestimos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTableRelatorioEmprestimos.setInheritsPopupMenu(true);
         jTableRelatorioEmprestimos.setName(""); // NOI18N
+        jTableRelatorioEmprestimos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTableRelatorioEmprestimos);
-        if (jTableRelatorioEmprestimos.getColumnModel().getColumnCount() > 0) {
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(0).setResizable(false);
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(0).setPreferredWidth(300);
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(1).setResizable(false);
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(1).setPreferredWidth(300);
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(2).setResizable(false);
-            jTableRelatorioEmprestimos.getColumnModel().getColumn(2).setPreferredWidth(130);
-        }
 
         jPanel1.add(jScrollPane1);
         jScrollPane1.setBounds(10, 30, 750, 530);
@@ -160,7 +136,7 @@ public class RelatorioEmprestimo extends javax.swing.JInternalFrame {
 
     private void jButtonAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAtualizarActionPerformed
         
-        carregarRelatorio();
+        tabelaModelo.atualizar();
         
     }//GEN-LAST:event_jButtonAtualizarActionPerformed
 
@@ -179,10 +155,4 @@ public class RelatorioEmprestimo extends javax.swing.JInternalFrame {
     private javax.swing.JTable jTableRelatorioEmprestimos;
     // End of variables declaration//GEN-END:variables
 
-    private void carregarRelatorio() {
-
-        
-        
-
-    }
 }
